@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openkm-deployment
+  labels:
+    app: openkm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openkm
+  template:
+    metadata:
+      labels:
+        app: openkm
+    spec:
+      containers: 
+      - name: openkm
+        image: gehridav/openkm:6.3.4
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - mountPath: "/opt/openkm/repository"
+          name: openkm-repo-pv-storage
+        - mountPath: "/opt/openkm/repository/scans"
+          name: openkm-scans-nfs-storage
+        env:
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: openkmdb
+              key: username
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: openkmdb
+              key: password
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:        
+            secretKeyRef:   
+              name: openkmdb
+              key: rootpw 
+        - name: JAVA_OPTS
+          value: "-Ddb.host=localhost:3306 -Ddb.username=$(MYSQL_USER) -Ddb.password=$(MYSQL_PASSWORD)" 
+      - name: openkm-mariadb
+        image: mariadb:latest
+        env:
+        - name: MYSQL_DATABASE
+          value: "okmdb"
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: openkmdb
+              key: username
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: openkmdb
+              key: password
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:        
+            secretKeyRef:   
+              name: openkmdb
+              key: rootpw
+        args:
+         - "--character-set-server=utf8"
+         - "--collation-server=utf8_general_ci"
+         - "--character_set_server=utf8"
+         - "--collation_server=utf8_general_ci"
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - mountPath: "/var/lib/mysql"
+          name: openkm-db-pv-storage
+      volumes:
+      - name: openkm-repo-pv-storage
+        persistentVolumeClaim:
+         claimName: openkm-repo-pv-claim
+      - name: openkm-db-pv-storage
+        persistentVolumeClaim:
+         claimName: openkm-db-pv-claim
+      - name: openkm-scans-nfs-storage
+        persistentVolumeClaim:
+         claimName: openkm-scans-nfs-claim

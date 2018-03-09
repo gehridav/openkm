@@ -1,0 +1,16 @@
+<included>
+
+  <logger name="org.springframework" level="WARN" />
+  <logger name="org.hibernate" level="WARN" />
+  <logger name="ch.qos.logback" level="WARN" />
+  <logger name="org.jbpm" level="WARN" />
+  <logger name="com.openkm" level="INFO" />
+  <logger name="com.davidgehrig" level="INFO" />
+
+  <root level="WARN">
+     <!-- Only for development purpose -->
+     <!-- <appender-ref ref="STDOUT"/> -->
+     <appender-ref ref="FILE" />
+  </root>
+
+</included>
