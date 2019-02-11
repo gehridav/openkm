@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: openkm
+  labels:
+    app: openkm
+spec:
+  selector:
+    app: openkm
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+    name: web

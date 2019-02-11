@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: NetworkPolicy
+metadata:
+  name: openkm-np
+  namespace: default
+spec:
+  policyTypes:
+  - Ingress
+  podSelector:
+    matchLabels:
+      app: openkm
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    ports:
+    - protocol: TCP
+      port: 8080

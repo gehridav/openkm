@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: openkm
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    certmanager.k8s.io/issuer: letsencrypt-prod-nadineunddavid-ch
+    certmanager.k8s.io/acme-challenge-type: dns01
+spec:
+  tls:
+  - secretName: nadineunddavid-ch-tls
+  rules:
+  - host: docs.nadineunddavid.ch
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: openkm
+          servicePort: 80 
