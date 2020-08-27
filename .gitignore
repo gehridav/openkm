@@ -20,3 +20,8 @@ bin/
 ./code/
 cargo-installs/
 atlassian-ide-plugin.xml
+kubernetes/openkm_secrets.yaml
+kubernetes/openkm_smtp-secrets.yaml
+openkm-plugins/cronjob/src/main/java/META-INF/MANIFEST.MF
+openkm-plugins/cronjob/src/META-INF/MANIFEST.MF
+openkm-plugins/cronjob/src/META-INF/MANIFEST.MF

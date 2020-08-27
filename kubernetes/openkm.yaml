@@ -14,16 +14,28 @@ spec:
       labels:
         app: openkm
     spec:
+      initContainers:
+      - name: copy-ro-scripts
+        image: busybox
+        command: ['sh', '-c', 'cp /scripts/* /openkmcfg/']
+        volumeMounts:
+          - name: config-volume
+            mountPath: /scripts
+          - name: openkmcfg
+            mountPath: /openkmcfg
       containers: 
       - name: openkm
-        image: gehridav/openkm:6.3.4
+        image: gehridav/openkm:6.3.9
         ports:
         - containerPort: 8080
         volumeMounts:
-        - mountPath: "/opt/openkm/repository"
+        - mountPath: "/opt/tomcat/repository"
           name: openkm-repo-pv-storage
-        - mountPath: "/opt/openkm/repository/scans"
+        - mountPath: "/opt/tomcat/repository/scans"
           name: openkm-scans-nfs-storage
+        - mountPath: /opt/tomcat/OpenKM.cfg
+          name: openkmcfg
+          subPath: OpenKM.cfg  
         env:
         - name: MYSQL_USER
           valueFrom:
@@ -35,10 +47,30 @@ spec:
             secretKeyRef:
               name: openkmdb
               key: password
+        - name: SMTP_USER
+          valueFrom:
+            secretKeyRef:
+              name: smtp
+              key: user
+        - name: SMTP_FROM
+          valueFrom:
+            secretKeyRef:
+              name: smtp
+              key: from
+        - name: SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: smtp
+              key: password 
+        - name: SMTP_HOST
+          valueFrom:
+            secretKeyRef:
+              name: smtp
+              key: host                     
         - name: JAVA_OPTS
-          value: "-Ddb.host=localhost:3306 -Ddb.username=$(MYSQL_USER) -Ddb.password=$(MYSQL_PASSWORD)" 
+          value: "-Ddb.host=localhost:3306 -Ddb.username=$(MYSQL_USER) -Ddb.password=$(MYSQL_PASSWORD) -Dsmtp.user=$(SMTP_USER) -Dsmtp.password=$(SMTP_PASSWORD) -Dsmtp.from=$(SMTP_FROM) -Dsmtp.host=$(SMTP_HOST)" 
       - name: openkm-mariadb
-        image: mariadb:latest
+        image: mariadb:10.5.5
         env:
         - name: MYSQL_DATABASE
           value: "okmdb"
@@ -77,3 +109,8 @@ spec:
       - name: openkm-scans-nfs-storage
         persistentVolumeClaim:
          claimName: openkm-scans-nfs-claim
+      - name: config-volume
+        configMap:
+          name: openkm-config
+      - name: openkmcfg
+        emptyDir: {}

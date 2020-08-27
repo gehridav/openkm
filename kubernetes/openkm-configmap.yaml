@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openkm-config
+  namespace: default
+data:
+  OpenKM.cfg: |
+    hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate.hbm2ddl=none
+    logback.config=logback.xml
+    system.ocr=/usr/bin/tesseract ${fileIn} ${fileOut} -l deu

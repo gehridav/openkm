@@ -20,13 +20,12 @@
      Documentation at /docs/config/server.html
  -->
 <Server port="8005" shutdown="SHUTDOWN">
+  <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
   <!-- Security listener. Documentation at /docs/config/listeners.html
   <Listener className="org.apache.catalina.security.SecurityListener" />
   -->
   <!--APR library loader. Documentation at /docs/apr.html -->
   <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
-  <!--Initialize Jasper prior to webapps are loaded. Documentation at /docs/jasper-howto.html -->
-  <Listener className="org.apache.catalina.core.JasperListener" />
   <!-- Prevent memory leaks due to use of particular java/javax APIs-->
   <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
   <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
@@ -76,7 +75,7 @@
             url="jdbc:mysql://localhost:3306/okmdb?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF8"/> -->
             
          <Resource name="jdbc/OpenKMDS" auth="Container" type="javax.sql.DataSource"
-          maxActive="100" maxIdle="30" maxWait="10000" validationQuery="select 1"
+          maxActive="100" maxIdle="30" maxWaitMillis="10000" validationQuery="select 1"
           username="${db.username}" password="${db.password}" driverClassName="org.mariadb.jdbc.Driver"
           url="jdbc:mariadb://${db.host}/okmdb?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF8"/>
             
@@ -84,11 +83,11 @@
          <Resource name="mail/OpenKM" auth="Container" type="javax.mail.Session"
              mail.transport.protocol="smtp"
              mail.smtp.auth="true"
-             mail.smtp.host="smtp.gmail.com"
+             mail.smtp.host="${smtp.host}"
              mail.smtp.port="465"
-             mail.smtp.user="gehrig.david@gmail.com"
-             password="clzephahxijlsdkh"
-             mail.smtp.from="gehrig.david@gmail.com"
+             mail.smtp.user="${smtp.user}"
+             password="${smtp.password}"
+             mail.smtp.from="${smtp.from}"
              mail.smtp.quitwait="false"
              mail.smtp.starttls.enable="true"
              mail.smtp.socketFactory.class="javax.net.ssl.SSLSocketFactory"
@@ -197,12 +196,11 @@
              Documentation at: /docs/config/valve.html
              Note: The pattern used is equivalent to using pattern="common" -->
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
-               prefix="localhost_access_log." suffix=".txt"
+               prefix="localhost_access_log" suffix=".txt"
                pattern="%h %l %u %t &quot;%r&quot; %s %b" />
 
         <!-- External resources -->
-        <!-- <Context docBase="${catalina.base}/custom" path="/OpenKM/custom" reloadable="true"/> -->
-        <!-- <Context docBase="${catalina.base}/repository/cache/js" path="/OpenKM/cadviewerjs" reloadable="true"/> -->
+<!-- <Context docBase="${catalina.home}/custom" path="/OpenKM/custom" reloadable="true"/> -->
       </Host>
     </Engine>
   </Service>
